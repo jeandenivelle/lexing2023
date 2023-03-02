@@ -11,7 +11,8 @@ namespace lexing
 {
 
    // This is called `reachability function' in the GANDALF 2023 paper,
-   // but we limit the length. 
+   // but we limit the length to a constant maxsize, in order to 
+   // make sure that it doesn't become quadratic. 
 
    template< typename T > 
    requires std::three_way_comparable< T, std::weak_ordering > 
@@ -117,7 +118,7 @@ namespace lexing
 
       if( p1 != r1. end( ) && p2 == r2. end( ))
          return std::weak_ordering::greater;
- 
+
       return std::weak_ordering::equivalent;
    }
 

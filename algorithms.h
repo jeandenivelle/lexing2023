@@ -154,7 +154,7 @@ namespace lexing
    std::pair< T, size_t >  
    readandclassify( const classifier<C,T> & cl, S& inp )
    {
-      //  std::cout << "non deterministic read and classify\n";
+      // std::cout << "non deterministic read and classify\n";
 
       stateset reachable; 
       reachable. insert( state(0) );
@@ -194,6 +194,7 @@ namespace lexing
          reachable = eps_closure( cl. delta, reachable );
 
          // std::cout << "move to states " << reachable << "\n";
+
          ++ i;
       }
    }

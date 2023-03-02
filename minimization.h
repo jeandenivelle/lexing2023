@@ -59,14 +59,14 @@ namespace lexing
       {
          auto u = unchecked. front( ); unchecked. pop( ); 
         
-         bool change = false;
-
          for( state b : backtransitions[u] )
          {
+            bool change = false; 
+
             change |= part[ b. nr ]. first. insert( part[u]. second, 1 );
 
             for( const auto& r : part[u]. first )
-               change |= part[ b.nr ]. first. insert( r.first, r.second + 1 ); 
+               change |= part[ b. nr ]. first. insert( r.first, r.second + 1 ); 
 
             if( change ) 
                unchecked. push( b. nr );
@@ -80,7 +80,7 @@ namespace lexing
             std::cout << state(c) << " : " << part[c] << "\n";
          } 
 
-         std::cout << "note that states are currently not correctly sorted\n";
+         std::cout << "(note that states are currently not sorted)\n";
       }
 
       std::map< comp< reachfunc<T>, T >, stateset > classindex; 
@@ -216,14 +216,17 @@ namespace lexing
          // backtransitions[s] is the set of states that have a transition into 
          // state(s). 
 
-      partition part = initialpartitionwithfuture( cl, backtransitions );
+      partition part = initialpartitionwithfuture( cl, backtransitions ); 
 
       if( !part. wellformed( )) 
          throw std::runtime_error( "obviously a major malfunction" ); 
             // You may start looking looking very carefully into the situation.
 
-      // std::cout << "Initial Partition:\n";
-      // std::cout << part << "\n";
+      if constexpr( true )
+      {
+         std::cout << "Initial Partition:\n";
+         std::cout << part << "\n";
+      }
 
       std::stack< size_t > unchecked;
          // It clearly follows from the literature that
