@@ -6,14 +6,14 @@
 
 #include <iostream>
 
-// states are represented by unsigned int.
-// In an acceptor, states are represented by
-// (signed) integers, and relative to the
+// states are represented by an unsigned int.
+// In an acceptor, transitions to states are represented by
+// (signed) integers, relative to the
 // present state. Because of that, we have operators
 // + which adds an integer to a state
 // - which subtracts an integer from a state
-// and - which substracts to states and returns 
-// a state. 
+// and - which substracts two states and returns 
+// an int. 
 
 namespace lexing
 {
@@ -33,20 +33,20 @@ namespace lexing
 
       state& operator ++ () 
       {
-         nr ++;
+         ++ nr; 
          return *this;
       }
 
       state& operator -- ()
       {
-         nr --;
+         -- nr; 
          return *this;
       }
 
       state operator ++ ( int ) 
       {
          state old = *this;
-         nr++ ;
+         nr ++ ;
          return old;
       }
 
@@ -69,38 +69,10 @@ namespace lexing
 
    };
 
-   inline bool operator < ( state s1, state s2 )
-   {
-      return s1. nr < s2. nr;
-   }
-
-   inline bool operator <= ( state s1, state s2 ) 
-   {
-      return s1. nr <= s2. nr;
-   }
-
-   inline bool operator > ( state s1, state s2 )
-   {
-      return s1. nr > s2. nr; 
-   }
-
-   inline bool operator >= ( state s1, state s2 )
-   {
-      return s1. nr >= s2. nr;
-   }
-
-   inline bool operator == ( state s1, state s2 ) 
-   {
-      return s1. nr == s2. nr;
-   }
-
-   inline bool operator != ( state s1, state s2 ) 
-   {
-      return s1. nr != s2. nr; 
-   }
-
-
-   inline std::ostream& operator<< ( std::ostream& out, const state& s )
+   inline bool operator == ( state s1, state s2 ) { return s1. nr == s2. nr; } 
+   inline bool operator < ( state s1, state s2 ) { return s1. nr < s2. nr; }
+   
+   inline std::ostream& operator << ( std::ostream& out, const state& s )
    {
       out << "Q";
       if( s. nr < 10 ) out << '0';

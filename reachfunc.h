@@ -5,6 +5,7 @@
 #define MAPH_LEXING_REACHFUNC_  1
 
 #include <map>
+#include <compare>
 
 namespace lexing
 {
@@ -13,23 +14,21 @@ namespace lexing
    // but we limit the length. 
 
    template< typename T > 
+   requires std::three_way_comparable< T, std::weak_ordering > 
    struct reachfunc
    {
-      T t0; 
       std::vector< std::pair< T, size_t >> func;
          // Maps every reachable T to its nearest, positive distance.
          // We keep the highest maxsize T. 
          // We store in decreasing order, because it is more convenient. 
 
-      static constexpr unsigned int maxsize = 3;
+      static constexpr unsigned int maxsize = 4;
 
-      reachfunc( const T& t0 )
-         : t0( t0 )
-      { } 
+      reachfunc( ) = default;
 
       void print( std::ostream& out ) const
       {
-         out << t0 << "(";
+         out << "{";
          for( auto p = begin( ); p != end( ); ++ p )
          {
             if( p != func. begin( ))
@@ -38,7 +37,7 @@ namespace lexing
                out << " ";
             out << ( p -> first ) << "/" << ( p -> second );
          }
-         out << " )";
+         out << " }";
       }
 
       size_t size( ) const { return func. size( ); }
@@ -93,61 +92,42 @@ namespace lexing
 
    };
 
- 
-   template< typename T > 
-   inline bool 
-   operator == ( const reachfunc<T> & r1, const reachfunc<T> & r2 )
-   {
-      if( r1. t0 == r2. t0 && r1. size( ) == r2. size( ))
-      {
-         auto p1 = r1. begin( );
-         auto p2 = r2. begin( );
-
-         while( p1 != r1. end( ))
-         {
-            if( p1 -> first != p2 -> first || p1 -> second != p2 -> second )
-               return false;
-
-            ++ p1; ++ p2;
-         }
-         return true;
-      }
-      else
-         return false; 
-   }
 
    template< typename T >
-   inline bool 
-   operator != ( const reachfunc<T> & r1, const reachfunc<T> & r2 )
-      { return ! ( r1 == r2 ); }  
-
-
-   template< typename T >
-   inline bool
-   operator < ( const reachfunc<T> & r1, const reachfunc<T> & r2 )
+   requires std::three_way_comparable< T, std::weak_ordering > 
+   inline std::weak_ordering 
+   operator <=> ( const reachfunc<T> & r1, const reachfunc<T> & r2 )
    {
-      if( r1. t0 != r2. t0 )
-         return r1. t0 < r2. t0;
-
-      if( r1. size( ) != r2. size( )) 
-         return r1. size( ) < r2. size( ); 
-
       auto p1 = r1. begin( );
       auto p2 = r2. begin( );
 
-      while( p1 != r1. end( ))
+      while( p1 != r1. end( ) && p2 != r2. end( ))
       {
-         if( p1 -> first != p2 -> first )
-            return ( p1 -> first ) < ( p2 -> first );
+         auto c = ( p1 -> first <=> p2 -> first );
+         if( !is_eq(c)) return c;
 
-         if( p1 -> second != p2 -> second )
-            return ( p1 -> second ) < ( p2 -> second );
+         c = ( p1 -> second <=> p2 -> second );
+         if( !is_eq(c)) return c; 
 
          ++ p1; ++ p2;
       }
-      return false;
+     
+      if( p1 == r1. end( ) && p2 != r2. end( ))
+         return std::weak_ordering::less;
+
+      if( p1 != r1. end( ) && p2 == r2. end( ))
+         return std::weak_ordering::greater;
+ 
+      return std::weak_ordering::equivalent;
    }
 
+   template< typename T >
+   requires std::three_way_comparable< T, std::weak_ordering >
+   inline bool
+   operator == ( const reachfunc<T> & r1, const reachfunc<T> & r2 )
+   {
+      return is_eq( r1 <=> r2 ); 
+   }
 
    template< typename T > 
    std::ostream& 

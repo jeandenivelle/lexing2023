@@ -137,7 +137,7 @@ namespace lexing
 
       while( p != set. end( )) 
       {
-         if( cl[ p -> nr ] != error && *p > *best ) 
+         if( cl[ p -> nr ] != error && *best < *p ) 
          {
             best = p;
          }

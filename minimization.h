@@ -4,6 +4,9 @@
 
 #include "partition.h"
 #include "reachfunc.h"
+#include "comp.h"
+
+#include <concepts>
 #include <stack>
 #include <queue>
 
@@ -22,7 +25,7 @@ namespace lexing
 
       for( auto st : from )
       {
-         auto p = delta[ st.nr ].noneps.find(c);
+         auto p = delta[ st.nr ]. noneps. find(c);
          if( p -> second != blocked &&
                 into. contains( st + p -> second ))
          {
@@ -34,13 +37,17 @@ namespace lexing
 
   
    template< typename C, typename T > 
+   requires std::three_way_comparable< T, std::weak_ordering > 
    partition 
    initialpartitionwithfuture( const classifier<C,T> & cl,
                                const std::vector< stateset > & backtransitions )
    {
-      std::vector< reachfunc<T>> reachables; 
+      std::vector< comp< reachfunc<T>, T >> part; 
+ 
       for( size_t c = 0; c != cl. nrstates( ); ++ c )
-         reachables. push_back( reachfunc( cl.classifications[c] ));
+      {
+         part. push_back( { reachfunc<T> ( ), cl. classifications[c] } );
+      }
 
       std::queue< size_t > unchecked;
          // Check what works better, stack or queue.
@@ -56,9 +63,11 @@ namespace lexing
 
          for( state b : backtransitions[u] )
          {
-            change |= reachables[ b. nr ]. insert( reachables[u]. t0, 1 );
-            for( const auto& r : reachables[u] )
-               change |= reachables[ b. nr ]. insert( r. first, r. second + 1 ); 
+            change |= part[ b. nr ]. first. insert( part[u]. second, 1 );
+
+            for( const auto& r : part[u]. first )
+               change |= part[ b.nr ]. first. insert( r.first, r.second + 1 ); 
+
             if( change ) 
                unchecked. push( b. nr );
          }
@@ -68,26 +77,26 @@ namespace lexing
       {
          for( size_t c = 0; c != cl. nrstates( ); ++ c )
          {
-            std::cout << c << "  " << reachables[c] << "\n";
+            std::cout << state(c) << " : " << part[c] << "\n";
          } 
 
          std::cout << "note that states are currently not correctly sorted\n";
-         throw std::runtime_error( "stop en kijk" ); 
       }
 
-      std::map< reachfunc<T>, stateset > classindex; 
+      std::map< comp< reachfunc<T>, T >, stateset > classindex; 
+
       for( size_t c = 0; c != cl. nrstates( ); ++ c )
       {
-         const auto& r = reachables[c];
+         const auto& r = part[c];
          classindex[r]. insert(c);
       }
 
-      partition part = std::move( classindex ); 
-      return part;
+      return classindex;
    }
 
 
    template< typename C, typename T >
+   requires std::three_way_comparable< T, std::weak_ordering >
    partition
    initialpartition( const classifier<C,T> & cl )
    {
