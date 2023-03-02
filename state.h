@@ -22,7 +22,7 @@ namespace lexing
    {
       unsigned int nr;
 
-      state(unsigned int nr)
+      state( unsigned int nr )
          : nr(nr)
       { }
 

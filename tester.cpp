@@ -6,6 +6,8 @@
 
 #include "includes.h"
 
+#include "reachfunc.h"
+
 lexing::classifier< char, std::string > calculator( )
 {
    using namespace lexing;
@@ -66,9 +68,11 @@ lexing::classifier< char, std::string > calculator( )
 
    cl. insert( just( '#' ), "#eof" );
 
-   std::cout << cl << "\n";
 
    cl = make_deterministic( cl );
+
+   std::cout << cl << "\n";
+
    cl = minimize( cl );
 
    std::ofstream file( "DFA.h" );
@@ -99,6 +103,14 @@ namespace
 
 int main( int argc, char* argv[] )
 {
+
+   // lexing::reachfunc< std::string > rf( "hans" );
+   // std::cout << rf. insert( "ddd", 4 ) << "\n";
+   // std::cout << rf. insert( "bbb", 3 ) << "\n";
+   // std::cout << rf. insert( "bbb", 2 ) << "\n";  
+
+   // std::cout << rf << "\n"; 
+   // return 0;
 
    auto cls = calculator( ); 
    // auto cls = 37;           // Replace this if you want to run the automaton.

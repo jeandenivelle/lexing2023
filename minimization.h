@@ -3,7 +3,7 @@
 #define MAPH_LEXING_MINIMIZATION_  1
 
 #include "partition.h"
-#include "reachableclasses.h"
+#include "reachfunc.h"
 #include <stack>
 #include <queue>
 
@@ -38,9 +38,9 @@ namespace lexing
    initialpartitionwithfuture( const classifier<C,T> & cl,
                                const std::vector< stateset > & backtransitions )
    {
-      std::vector< reachableclasses<T>> reachables; 
+      std::vector< reachfunc<T>> reachables; 
       for( size_t c = 0; c != cl. nrstates( ); ++ c )
-         reachables. push_back( reachableclasses( cl.classifications[c] ));
+         reachables. push_back( reachfunc( cl.classifications[c] ));
 
       std::queue< size_t > unchecked;
          // Check what works better, stack or queue.
@@ -52,28 +52,30 @@ namespace lexing
       {
          auto u = unchecked. front( ); unchecked. pop( ); 
         
-         auto r = reachables[u];
-         r. add1( ); 
+         bool change = false;
+
          for( state b : backtransitions[u] )
          {
-            auto m = merge( reachables[ b.nr ], r );
-            if( m != reachables[ b. nr ] )
-            {
-               reachables[ b. nr ] = m; 
+            change |= reachables[ b. nr ]. insert( reachables[u]. t0, 1 );
+            for( const auto& r : reachables[u] )
+               change |= reachables[ b. nr ]. insert( r. first, r. second + 1 ); 
+            if( change ) 
                unchecked. push( b. nr );
-            } 
          }
       }
 
-      if constexpr( false ) 
+      if constexpr( true ) 
       {
          for( size_t c = 0; c != cl. nrstates( ); ++ c )
          {
             std::cout << c << "  " << reachables[c] << "\n";
          } 
+
+         std::cout << "note that states are currently not correctly sorted\n";
+         throw std::runtime_error( "stop en kijk" ); 
       }
 
-      std::map< reachableclasses<T>, stateset > classindex; 
+      std::map< reachfunc<T>, stateset > classindex; 
       for( size_t c = 0; c != cl. nrstates( ); ++ c )
       {
          const auto& r = reachables[c];
