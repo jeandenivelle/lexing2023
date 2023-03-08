@@ -9,8 +9,8 @@
 #include <sstream>
 #include <iostream>
 #include <set>
-#include <stack>
 #include <string>
+#include <concept>
 
 #include "flatmap.h"
 #include "state.h"
@@ -359,6 +359,16 @@ namespace lexing
 
       while( *w != 0 )
          res *= just( *w ++ );
+      return res; 
+   }
+
+   template< typename C > 
+   acceptor<C> word( const C* p1, const C* p2 ) 
+   {
+      acceptor<C> res;
+
+      while( p1 != p2 ) 
+         res *= just( *p1 ++ ); 
       return res; 
    }
 

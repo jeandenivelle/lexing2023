@@ -73,7 +73,7 @@ namespace lexing
          }
       }
 
-      if constexpr( true ) 
+      if constexpr( false ) 
       {
          for( size_t c = 0; c != cl. nrstates( ); ++ c )
          {
@@ -222,7 +222,7 @@ namespace lexing
          throw std::runtime_error( "obviously a major malfunction" ); 
             // You may start looking looking very carefully into the situation.
 
-      if constexpr( true )
+      if constexpr( false )
       {
          std::cout << "Initial Partition:\n";
          std::cout << part << "\n";
