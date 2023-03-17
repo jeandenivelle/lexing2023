@@ -4,7 +4,7 @@
 #include "filereader.h"
 #include <utility>
 
-filereader::filereader( filereader&& read )
+lexing::filereader::filereader( filereader&& read )
    : in( std::exchange( read. in, nullptr )),
      buffer( std::exchange( read. buffer, std::string( ))),
      filename( std::exchange( read. filename, std::string( ))),
@@ -12,7 +12,7 @@ filereader::filereader( filereader&& read )
      column( std::exchange( read. column, 0 ))
 { }
 
-filereader& filereader::operator = ( filereader&& read )
+lexing::filereader& lexing::filereader::operator = ( filereader&& read )
 {
    in = std::exchange( read. in, nullptr ); 
    buffer = std::exchange( read. buffer, std::string( )); 
@@ -22,14 +22,14 @@ filereader& filereader::operator = ( filereader&& read )
    return *this; 
 }
 
-char filereader::peek( size_t i ) const 
+char lexing::filereader::peek( size_t i ) const 
 {
    if( i >= buffer. size( ))
       throw std::runtime_error( "filereader: peek outside of buffer" );
    return buffer[i];
 }
 
-std::string_view filereader::view( size_t i ) const
+std::string_view lexing::filereader::view( size_t i ) const
 {
    if( i > buffer. size( ))
       throw std::runtime_error( "filereader: view outside of buffer" );
@@ -37,7 +37,7 @@ std::string_view filereader::view( size_t i ) const
    return std::string_view( buffer.data( ), i );
 }
 
-bool filereader::has( size_t len )
+bool lexing::filereader::has( size_t len )
 {
    if( len > buffer. size( ))
    {
@@ -57,7 +57,7 @@ bool filereader::has( size_t len )
 
 // In a real application, this operation would be unprotected:
 
-void filereader::commit( size_t len ) 
+void lexing::filereader::commit( size_t len ) 
 {
    if( len > buffer. size( ))
       throw std::runtime_error( "filereader: commit beyond buffer" ); 
@@ -88,7 +88,7 @@ namespace
 }
 
 
-void filereader::print( std::ostream& out ) const 
+void lexing::filereader::print( std::ostream& out ) const 
 {
    if( in == nullptr )
    {

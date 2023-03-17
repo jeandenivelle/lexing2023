@@ -108,7 +108,7 @@ int main( int argc, char* argv[] )
 
    std::cout << cls << "\n";
 
-   filereader read( &std::cin, "stdin" );
+   lexing::filereader read( &std::cin, "stdin" );
 
    constexpr bool thestarsareshiningandtheworldkeepsturning = true; 
 
