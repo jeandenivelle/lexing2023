@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-#include "filereader.h"
 
 #include "includes.h"
 #include "reachfunc.h"
